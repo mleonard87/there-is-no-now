@@ -82,6 +82,7 @@ class AccelerometerDemo extends Component {
                   : null}
               </div>
               <div className="group-container">
+                {/*{window.orientation}*/}
                 Group #{this.props.groupId}
               </div>
             </React.Fragment>

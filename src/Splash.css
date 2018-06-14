@@ -3,8 +3,8 @@
   color: #F4E989;
   font-family: 'Roboto Condensed', sans-serif;
   font-size: 1.6rem;
-  min-height: 100vh;
-  width: 100vw;
+  min-height: 100%;
+  width: 100%;
   text-align: center;
   display: none;
 }
@@ -30,4 +30,8 @@
 
 .splash .intro p {
   margin-bottom: 1.5rem;
+}
+
+.splash .ios-auto-rotate-help {
+  display: flex;
 }
