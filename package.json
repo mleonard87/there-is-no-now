@@ -1,0 +1,20 @@
+{
+  "name": "there-is-no-now",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "gyronorm": "^2.0.6",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
+    "react-motion": "^0.5.2",
+    "react-scripts": "1.1.4",
+    "serve": "^8.2.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "now-start": "serve --single ./build",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
