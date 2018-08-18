@@ -13,6 +13,34 @@ class AccelerometerDemo extends Component {
 
   componentDidMount = () => {
     window.addEventListener("resize", this.handleResize);
+    const delay = Math.round(Math.random() * this.props.dataFrequency);
+    setTimeout(this.startGyroDataInterval, delay);
+  };
+
+  componentWillUnmount = () => {
+    clearInterval(this.gyroDataInterval);
+  };
+
+  componentWillReceiveProps = (nextProps) => {
+    if (this.props.visible && !nextProps.visible) {
+      clearInterval(this.gyroDataInterval);
+    }
+
+    if (this.props.dataFrequency !== nextProps.dataFrequency) {
+      clearInterval(this.gyroDataInterval);
+      const delay = Math.round(Math.random() * nextProps.dataFrequency);
+      setTimeout(this.startGyroDataInterval, delay);
+    }
+  };
+
+  startGyroDataInterval = () => {
+    this.gyroDataInterval = setInterval(this.sendGyroData, this.props.dataFrequency);
+  };
+
+  sendGyroData = () => {
+    if (this.props.visible && this.props.gyro) {
+      this.props.sendGyroData(this.props.gyro);
+    }
   };
 
   registerVisualisation = (elem) => {
@@ -38,7 +66,6 @@ class AccelerometerDemo extends Component {
   };
 
   render() {
-    console.log(this.props);
     return (
       <div
         ref={this.props.registerContent}
@@ -66,7 +93,7 @@ class AccelerometerDemo extends Component {
                       <span className="big">)</span>
                     </span>
                   </div>
-                  <div className="connection-status">Connected</div>
+                  <div className="connection-status">{this.props.dataFrequency / 1000} secs</div>
                 </div>
               </div>
               <div

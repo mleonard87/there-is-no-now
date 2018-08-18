@@ -1,17 +1,29 @@
 import React, { Component } from 'react';
 import Splash from "./Splash";
 import AccelerometerDemo from "./AccelerometerDemo";
-import './App.css';
+import io from "socket.io-client";
 import NoSleep from "./nosleep.js";
+import './App.css';
+
+const guid = () => {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+};
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      clientId:  guid(),
       groupId: Math.round((Math.random() * 2) + 1),
       splashVisible: true,
       orientationClassName: "",
+      dataFrequency: 1000,
     };
   }
 
@@ -62,6 +74,27 @@ class App extends Component {
     }
 
     window.screen.orientation.lock("portrait");
+
+    this.socket = io(`${process.env.REACT_APP_SERVER_URL}/app`);
+    this.socket.on('connect', function(){});
+    this.socket.on('disconnect', function(){});
+
+    this.socket.on('control', this.updateControlData);
+  };
+
+  updateControlData = (controlData) => {
+    this.setState({
+      dataFrequency: controlData.dataFrequency * 1000,
+    });
+  };
+
+  sendGyroData = (gyro) => {
+    const data = {
+      clientId: this.state.clientId,
+      gamma: gyro.do.gamma,  // left-right
+      beta: gyro.do.beta,  // front-back
+    };
+    this.socket.emit('gyroData', data);
   };
 
   backToSplash = () => {
@@ -77,6 +110,10 @@ class App extends Component {
       document.mozCancelFullScreen();
     } else if (document.msExitFullscreen) {
       document.msExitFullscreen();
+    }
+
+    if (this.socket) {
+      this.socket.close();
     }
   };
 
@@ -104,6 +141,8 @@ class App extends Component {
           registerContent={this.registerContent}
           onBackToSplash={this.backToSplash}
           visible={!this.state.splashVisible}
+          sendGyroData={this.sendGyroData}
+          dataFrequency={this.state.dataFrequency}
           />
       </div>
     );
