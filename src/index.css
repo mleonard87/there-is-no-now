@@ -222,3 +222,15 @@ button:active {
 button:focus {
   outline: none;
 }
+
+.accel-demo.outage button {
+  background-color: white;
+  box-shadow: 6px 6px 0px 0px #aaa;
+}
+
+.accel-demo.outage button::before {
+  border-left-color: black;
+  border-top-color: black;
+  border-right-color: white;
+  border-bottom-color: white;
+}

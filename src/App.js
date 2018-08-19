@@ -24,6 +24,7 @@ class App extends Component {
       splashVisible: true,
       orientationClassName: "",
       dataFrequency: 1000,
+      clockSkew: 0,
     };
   }
 
@@ -73,7 +74,9 @@ class App extends Component {
       requestMethod.call(mainContent);
     }
 
-    window.screen.orientation.lock("portrait");
+    if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
+      window.screen.orientation.lock("portrait");
+    }
 
     this.socket = io(`${process.env.REACT_APP_SERVER_URL}/app`);
     this.socket.on('connect', function(){});
@@ -83,8 +86,20 @@ class App extends Component {
   };
 
   updateControlData = (controlData) => {
+    let clockDelay = this.state.clockDelay;
+    if (this.state.clockSkew !== controlData.clockSkew * 1000) {
+      clockDelay = Math.round(Math.random() * (controlData.clockSkew * 1000));
+    }
+
+    if (controlData.clockSkew === 0) {
+      clockDelay = 0;
+    }
+
     this.setState({
       dataFrequency: controlData.dataFrequency * 1000,
+      clockSkew: controlData.clockSkew * 1000,
+      clockDelay: clockDelay,
+      simulatedOutage: controlData.simulatedOutage,
     });
   };
 
@@ -143,6 +158,9 @@ class App extends Component {
           visible={!this.state.splashVisible}
           sendGyroData={this.sendGyroData}
           dataFrequency={this.state.dataFrequency}
+          clockSkew={this.state.clockSkew}
+          clockDelay={this.state.clockDelay}
+          simulatedOutage={this.state.simulatedOutage}
           />
       </div>
     );

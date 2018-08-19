@@ -7,6 +7,10 @@
   flex-direction: column;
 }
 
+.accel-demo.outage {
+  background-color: black;
+}
+
 .accel-demo.visible {
   height: 100%;
   width: 100%;
@@ -23,6 +27,11 @@
   font-size: 3rem;
 }
 
+.accel-demo.outage .header,
+.accel-demo.outage .group-container {
+  color: white;
+}
+
 .accel-demo .visualisation {
   background-color: #F4E989;
   flex: 4;
@@ -30,6 +39,26 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.accel-demo.outage .visualisation {
+  background-color: #bbbbbb;
+}
+
+.accel-demo.outage .crosshair .circle {
+  border-color: black;
+}
+
+.accel-demo.outage .crosshair .vertical {
+  border-color: black;
+}
+
+.accel-demo.outage .crosshair .horizontal {
+  border-color: black;
+}
+
+.accel-demo.outage .crosshair .ball {
+  background-color: black;
 }
 
 .accel-demo .header {
@@ -61,7 +90,6 @@
 }
 
 .accel-demo .sending .pulse {
-  animation: pulseAnimation 5s infinite ease-in-out;
   text-align: center;
   vertical-align: center;
   display: flex;

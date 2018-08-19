@@ -11,6 +11,8 @@ class AccelerometerDemo extends Component {
     };
   }
 
+  gyroDataBuffer = [];
+
   componentDidMount = () => {
     window.addEventListener("resize", this.handleResize);
     const delay = Math.round(Math.random() * this.props.dataFrequency);
@@ -26,10 +28,15 @@ class AccelerometerDemo extends Component {
       clearInterval(this.gyroDataInterval);
     }
 
-    if (this.props.dataFrequency !== nextProps.dataFrequency) {
+    if (this.props.dataFrequency !== nextProps.dataFrequency || this.props.clockSkew !== nextProps.clockSkew  || this.props.clockDelay !== nextProps.clockDelay) {
       clearInterval(this.gyroDataInterval);
-      const delay = Math.round(Math.random() * nextProps.dataFrequency);
-      setTimeout(this.startGyroDataInterval, delay);
+      setTimeout(this.startGyroDataInterval, nextProps.clockDelay);
+    }
+
+    if (this.props.simulatedOutage && !nextProps.simulatedOutage) {
+      for (let i = 0; i < this.gyroDataBuffer.length; i++) {
+        this.props.sendGyroData(this.gyroDataBuffer[i]);
+      }
     }
   };
 
@@ -39,7 +46,16 @@ class AccelerometerDemo extends Component {
 
   sendGyroData = () => {
     if (this.props.visible && this.props.gyro) {
-      this.props.sendGyroData(this.props.gyro);
+      if (this.props.simulatedOutage) {
+        this.gyroDataBuffer.push({
+          do: {
+            gamma: this.props.gyro.do.gamma,
+            beta: this.props.gyro.do.beta,
+          }
+        })
+      } else {
+        this.props.sendGyroData(this.props.gyro);
+      }
     }
   };
 
@@ -69,7 +85,7 @@ class AccelerometerDemo extends Component {
     return (
       <div
         ref={this.props.registerContent}
-        className={"accel-demo" + (this.props.visible ? " visible" : "")}
+        className={`accel-demo${this.props.visible ? " visible" : ""}${this.props.simulatedOutage ? " outage" : ""}`}
         >
         {this.props.visible
           ? <React.Fragment>
@@ -81,19 +97,40 @@ class AccelerometerDemo extends Component {
                 </div>
                 <div className="network">
                   <div className="sending">
-                    <span className="pulse">
+                    <span
+                      className="pulse"
+                      style={{
+                        animation: this.props.simulatedOutage
+                          ? 'none'
+                          : `pulseAnimation ${this.props.dataFrequency / 1000}s infinite ease-in-out`,
+                        opacity:  this.props.simulatedOutage ? 0 : 1,
+                      }}
+                      >
                       <span className="big">(</span>
                       <span className="medium">(</span>
                       <span className="small">(</span>
                     </span>
-                    <span className="message">SENDING</span>
-                    <span className="pulse">
+                    <span className="message">
+                      {this.props.simulatedOutage
+                        ? 'OFFLINE'
+                        : 'SENDING'}
+                    </span>
+                    <span
+                      className="pulse"
+                      style={{
+                        animation: this.props.simulatedOutage
+                          ? 'none'
+                          : `pulseAnimation ${this.props.dataFrequency / 1000}s infinite ease-in-out`,
+                        opacity:  this.props.simulatedOutage ? 0 : 1,
+                      }}
+                      >
                       <span className="small">)</span>
                       <span className="medium">)</span>
                       <span className="big">)</span>
                     </span>
                   </div>
-                  <div className="connection-status">{this.props.dataFrequency / 1000} secs</div>
+                  <div className="connection-status">{this.props.dataFrequency / 1000} {this.props.dataFrequency > 1000 ? 'Seconds' : 'Second'} Interval</div>
+                  <div className="connection-status">{+(this.props.clockDelay / 1000).toFixed(2)} {this.props.clockDelay > 1000 ? 'Seconds' : 'Second'} Clock Drift</div>
                 </div>
               </div>
               <div
