@@ -97,37 +97,37 @@ class AccelerometerDemo extends Component {
                 </div>
                 <div className="network">
                   <div className="sending">
-                    <span
-                      className="pulse"
-                      style={{
-                        animation: this.props.simulatedOutage
-                          ? 'none'
-                          : `pulseAnimation ${this.props.dataFrequency / 1000}s infinite ease-in-out`,
-                        opacity:  this.props.simulatedOutage ? 0 : 1,
-                      }}
-                      >
-                      <span className="big">(</span>
-                      <span className="medium">(</span>
-                      <span className="small">(</span>
-                    </span>
+                    {/*<span*/}
+                      {/*className="pulse"*/}
+                      {/*style={{*/}
+                        {/*animation: this.props.simulatedOutage*/}
+                          {/*? 'none'*/}
+                          {/*: `pulseAnimation ${this.props.dataFrequency / 1000}s infinite ease-in-out`,*/}
+                        {/*opacity:  this.props.simulatedOutage ? 0 : 1,*/}
+                      {/*}}*/}
+                      {/*>*/}
+                      {/*<span className="big">(</span>*/}
+                      {/*<span className="medium">(</span>*/}
+                      {/*<span className="small">(</span>*/}
+                    {/*</span>*/}
                     <span className="message">
                       {this.props.simulatedOutage
                         ? 'OFFLINE'
-                        : 'SENDING'}
+                        : 'ONLINE'}
                     </span>
-                    <span
-                      className="pulse"
-                      style={{
-                        animation: this.props.simulatedOutage
-                          ? 'none'
-                          : `pulseAnimation ${this.props.dataFrequency / 1000}s infinite ease-in-out`,
-                        opacity:  this.props.simulatedOutage ? 0 : 1,
-                      }}
-                      >
-                      <span className="small">)</span>
-                      <span className="medium">)</span>
-                      <span className="big">)</span>
-                    </span>
+                    {/*<span*/}
+                      {/*className="pulse"*/}
+                      {/*style={{*/}
+                        {/*animation: this.props.simulatedOutage*/}
+                          {/*? 'none'*/}
+                          {/*: `pulseAnimation ${this.props.dataFrequency / 1000}s infinite ease-in-out`,*/}
+                        {/*opacity:  this.props.simulatedOutage ? 0 : 1,*/}
+                      {/*}}*/}
+                      {/*>*/}
+                      {/*<span className="small">)</span>*/}
+                      {/*<span className="medium">)</span>*/}
+                      {/*<span className="big">)</span>*/}
+                    {/*</span>*/}
                   </div>
                   <div className="connection-status">{this.props.dataFrequency / 1000} {this.props.dataFrequency > 1000 ? 'Seconds' : 'Second'} Interval</div>
                   <div className="connection-status">{+(this.props.clockDelay / 1000).toFixed(2)} {this.props.clockDelay > 1000 ? 'Seconds' : 'Second'} Clock Drift</div>

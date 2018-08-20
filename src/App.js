@@ -101,6 +101,8 @@ class App extends Component {
       clockDelay: clockDelay,
       simulatedOutage: controlData.simulatedOutage,
     });
+
+    // alert(JSON.stringify(controlData));
   };
 
   sendGyroData = (gyro) => {
