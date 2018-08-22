@@ -12,6 +12,7 @@ class AccelerometerDemo extends Component {
   }
 
   gyroDataBuffer = [];
+  backoffMultiplier = Math.random() * (1.7 - 1) + 1;
 
   componentDidMount = () => {
     window.addEventListener("resize", this.handleResize);
@@ -33,10 +34,14 @@ class AccelerometerDemo extends Component {
       setTimeout(this.startGyroDataInterval, nextProps.clockDelay);
     }
 
-    if (this.props.simulatedOutage && !nextProps.simulatedOutage) {
-      for (let i = 0; i < this.gyroDataBuffer.length; i++) {
-        this.props.sendGyroData(this.gyroDataBuffer[i]);
-      }
+    if (this.props.simulatedOutage && !nextProps.simulatedOutage && this.props.outageStrategy === "immediate") {
+      this.sendBufferImmediate();
+    }
+  };
+
+  sendBufferImmediate = () => {
+    for (let i = 0; i < this.gyroDataBuffer.length; i++) {
+      this.props.sendGyroData(this.gyroDataBuffer[i]);
     }
   };
 
@@ -47,16 +52,45 @@ class AccelerometerDemo extends Component {
   sendGyroData = () => {
     if (this.props.visible && this.props.gyro) {
       if (this.props.simulatedOutage) {
-        this.gyroDataBuffer.push({
-          do: {
-            gamma: this.props.gyro.do.gamma,
-            beta: this.props.gyro.do.beta,
+          this.bufferGyroData();
+          if (this.props.outageStrategy === "exponential-backoff") {
+            this.beginExponentialBackoff();
           }
-        })
       } else {
         this.props.sendGyroData(this.props.gyro);
       }
     }
+  };
+
+  beginExponentialBackoff = () => {
+    if (!this.backoffTimeout) {
+      this.backoffTimeout = setTimeout(() => this.exponentialBackoff(100), 100);
+    }
+  };
+
+  exponentialBackoff = (delay) => {
+    if (this.props.simulatedOutage) {
+      const nextDelay = delay*this.backoffMultiplier;
+      this.backoffTimeout = setTimeout(() => this.exponentialBackoff(nextDelay), nextDelay);
+      this.setState({
+        delay: nextDelay,
+      });
+    } else {
+      // alert("sending exp. backoff");
+      this.sendBufferImmediate();
+      this.setState({
+        delay: 0,
+      });
+    }
+  };
+
+  bufferGyroData = () => {
+    this.gyroDataBuffer.push({
+      do: {
+        gamma: this.props.gyro.do.gamma,
+        beta: this.props.gyro.do.beta,
+      }
+    });
   };
 
   registerVisualisation = (elem) => {
@@ -75,7 +109,6 @@ class AccelerometerDemo extends Component {
   };
 
   handleResize = () => {
-    console.log("resizing");
     if (this.visualisationElem) {
       this.setCrosshairSize(this.visualisationElem);
     }
@@ -146,8 +179,10 @@ class AccelerometerDemo extends Component {
                   : null}
               </div>
               <div className="group-container">
-                {/*{window.orientation}*/}
-                Group #{this.props.groupId}
+                {this.props.outageStrategy === "exponential-backoff" && this.state.delay
+                  ? `${+(this.state.delay / 1000).toFixed(1)} seconds`
+                  : null}
+
               </div>
             </React.Fragment>
           : null}

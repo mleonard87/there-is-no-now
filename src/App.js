@@ -100,6 +100,7 @@ class App extends Component {
       clockSkew: controlData.clockSkew * 1000,
       clockDelay: clockDelay,
       simulatedOutage: controlData.simulatedOutage,
+      outageStrategy: controlData.outageStrategy,
     });
 
     // alert(JSON.stringify(controlData));
@@ -163,6 +164,7 @@ class App extends Component {
           clockSkew={this.state.clockSkew}
           clockDelay={this.state.clockDelay}
           simulatedOutage={this.state.simulatedOutage}
+          outageStrategy={this.state.outageStrategy}
           />
       </div>
     );
